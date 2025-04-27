@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "pulse-and-threads"
-  }
+    "default": "pulse-and-threads",
+    "urban-pulse": "pulse-and-threads"
+  },
+  "targets": {},
+  "etags": {}
 }

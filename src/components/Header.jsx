@@ -1,4 +1,4 @@
-import Tooltip from './Tootips.jsx';
+import Tooltip from './Tootip.jsx';
 import Dropdown from './Dropdown';
 import { useState } from 'react';
 

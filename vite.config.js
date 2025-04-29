@@ -3,22 +3,9 @@ import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs/promises'; // Use ESM import instead of require
 
 // Get current directory in ESM
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Windows-safe path resolver without require
-const resolvePath = async (p) => {
-  const resolved = path.resolve(__dirname, p).replace(/\\/g, '/');
-  try {
-    await fs.access(resolved);
-    return resolved;
-  } catch (err) {
-    console.error(`Path not found: ${resolved}`);
-    process.exit(1);
-  }
-};
 
 export default defineConfig({
   base: './',
@@ -29,37 +16,37 @@ export default defineConfig({
       jpg: { quality: 80, mozjpeg: true },
       png: { quality: 80, compressionLevel: 9 },
       webp: { quality: 80, lossless: false },
-      includePublic: true
+      includePublic: true,
     }),
   ],
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: await resolvePath('./src')
-      },
-      {
-        find: 'components',
-        replacement: await resolvePath('./src/components')
-      }
-    ]
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      'components': path.resolve(__dirname, './src/components'),
+    },
+    extensions: ['.js', '.jsx', '.json'], // Add '.jsx' for explicit resolution
   },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
+    sourcemap: true, // Enable for debugging
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name]-[hash][extname]',
-        entryFileNames: 'assets/[name]-[hash].js'
-      }
-    }
+        entryFileNames: 'assets/[name]-[hash].js',
+      },
+    },
   },
   server: {
     historyApiFallback: true,
     watch: {
       usePolling: true,
-      interval: 1000
-    }
-  }
+      interval: 1000,
+    },
+    open: true, // Auto-open browser
+  },
+  optimizeDeps: {
+    include: ['react', 'react-router-dom', 'framer-motion'], // Pre-bundle critical deps
+  },
 });

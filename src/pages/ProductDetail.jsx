@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { products } from '../data/products';
 import { useCart } from '@/Context/CartContext';
 import NotFound from '@/components/NotFound';
+import ColorFilter from '@/components/Filters/ColorFilter';
 
 export default function ProductDetail() {
   const { id } = useParams();

@@ -1,38 +1,68 @@
-// filepath: c:\Users\ACER\Desktop\Python\virtual-mall\src\components\Tooltip.jsx
 import React, { useState } from 'react';
-import { useFloating, autoUpdate, offset, shift } from '@floating-ui/react-dom';
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  shift,
+  arrow,
+  useHover,
+  useFocus,
+  useDismiss,
+  useRole,
+  useInteractions,
+  FloatingArrow
+} from '@floating-ui/react';
 
-export default function Tooltip() {
+export default function Tooltip({ content, children, placement = 'top' }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { x, y, refs, strategy } = useFloating({
+  const arrowRef = React.useRef(null);
+
+  const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
-    placement: 'top',
-    middleware: [offset(10), shift()],
-    whileElementsMounted: autoUpdate,
+    placement,
+    middleware: [
+      offset(8),
+      shift({ padding: 8 }),
+      arrow({ element: arrowRef })
+    ],
+    whileElementsMounted: autoUpdate
   });
+
+  const hover = useHover(context);
+  const focus = useFocus(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: 'tooltip' });
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    hover,
+    focus,
+    dismiss,
+    role
+  ]);
 
   return (
     <>
-      <button
+      <div
         ref={refs.setReference}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
+        {...getReferenceProps()}
+        className="inline-block"
       >
-        Hover me
-      </button>
+        {children}
+      </div>
       {isOpen && (
         <div
           ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-            width: 'max-content',
-          }}
-          className="bg-gray-800 text-white px-2 py-1 rounded text-sm"
+          style={floatingStyles}
+          {...getFloatingProps()}
+          className="z-50 max-w-xs bg-gray-900 text-white text-sm px-3 py-2 rounded pointer-events-none"
         >
-          Tooltip content
+          <FloatingArrow
+            ref={arrowRef}
+            context={context}
+            fill="#111827" // bg-gray-900
+          />
+          {content}
         </div>
       )}
     </>

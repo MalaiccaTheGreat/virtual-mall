@@ -3,6 +3,14 @@
     "default": "pulse-and-threads",
     "urban-pulse": "pulse-and-threads"
   },
-  "targets": {},
+  "targets": {
+    "pulse-and-threads": {
+      "hosting": {
+        "urban-pulse": [
+          "pulse-and-threads"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

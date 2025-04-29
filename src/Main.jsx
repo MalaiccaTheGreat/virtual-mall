@@ -11,25 +11,49 @@ import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
-import TryOnViewer from './components/TryOnViewer'; // Add this import
+import TryOnViewer from './components/TryOnViewer';
 import ReactGA from 'react-ga4';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from '@/components/NotFound';
-import { ErrorBoundary } from 'react-error-boundary';
+
+// Custom Error Boundary
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg max-w-md mx-auto mt-8">
+          <h2 className="font-bold">Something went wrong</h2>
+          <pre className="whitespace-pre-wrap">{this.state.error.message}</pre>
+          <button 
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-2 text-blue-600 hover:underline"
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Initialize GA4
 ReactGA.initialize('G-XXXXXXXXXX');
-
-function ErrorFallback({ error }) {
-  return (
-    <div className="p-4 bg-red-100 text-red-700 rounded-lg max-w-md mx-auto mt-8">
-      <h2 className="font-bold">Something went wrong</h2>
-      <pre className="whitespace-pre-wrap">{error.message}</pre>
-    </div>
-  );
-}
 
 function GAListener() {
   const location = useLocation();
@@ -43,7 +67,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <ErrorBoundary>
         <GAListener />
         <Layout />
       </ErrorBoundary>
@@ -53,10 +77,7 @@ const router = createBrowserRouter([
       { path: 'product/:id', element: <ProductDetail /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <Signup /> },
-      { 
-        path: 'try-on',
-        element: <TryOnViewer /> 
-      },
+      { path: 'try-on', element: <TryOnViewer /> },
       {
         path: 'checkout',
         element: (

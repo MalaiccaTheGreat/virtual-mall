@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function Cart({ items, onClose, onRemove }) {
   // Calculate total price
-  const subtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
   const shipping = subtotal > 100 ? 0 : 15;
   const total = subtotal + shipping;
 
@@ -12,8 +12,8 @@ export default function Cart({ items, onClose, onRemove }) {
       <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white p-6 shadow-lg overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Your Shopping Cart</h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-gray-500 hover:text-black transition-colors"
             aria-label="Close cart"
           >
@@ -35,34 +35,34 @@ export default function Cart({ items, onClose, onRemove }) {
           <div className="space-y-6">
             {/* Cart Items List */}
             <div className="divide-y">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.id} className="py-4 flex justify-between items-start">
                   <div className="flex gap-4">
                     {/* Product Image */}
                     <div className="w-20 h-20 bg-gray-100 rounded overflow-hidden">
                       {item.image && (
-                        <img 
-                          src={item.image} 
+                        <img
+                          src={item.image}
                           alt={item.name}
                           className="w-full h-full object-cover"
                         />
                       )}
                     </div>
-                    
+
                     {/* Product Info */}
                     <div>
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-gray-600">${item.price.toFixed(2)}</p>
-                      
+
                       {/* Quantity Controls */}
                       <div className="flex items-center mt-2">
-                        <button 
+                        <button
                           onClick={() => onRemove(item.id)}
                           className="text-sm text-red-500 hover:text-red-700 mr-4"
                         >
                           Remove
                         </button>
-                        
+
                         {item.quantity && (
                           <div className="flex items-center border rounded">
                             <button
@@ -89,10 +89,10 @@ export default function Cart({ items, onClose, onRemove }) {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Item Total */}
                   <div className="font-medium">
-                    ${((item.price * (item.quantity || 1)).toFixed(2)}
+                    ${((item.price * (item.quantity || 1)).toFixed(2))}
                   </div>
                 </div>
               ))}

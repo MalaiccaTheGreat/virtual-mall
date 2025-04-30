@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import FilterSidebar from '../components/FilterSidebar';
-import ProductGrid from '../components/Product/ProductGrid';
+import FilterSidebar from '../components/FilterSideBar';
+import ProductGrid from './components/ProductGrid';
 import { products } from '../data/products';
 
 export default function Home({ onAddToCart }) {

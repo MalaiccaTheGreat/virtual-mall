@@ -7,8 +7,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
-import Checkout from './pages/Checkout';
-import Login from './pages/Login';
+import Checkout from './pages/checkout';
+import Login from './pages/login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import TryOnViewer from './components/TryOnViewer';
@@ -16,7 +16,7 @@ import ReactGA from 'react-ga4';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
-import NotFound from '@/components/NotFound';
+import NotFound from './components/NotFound';
 
 // Custom Error Boundary
 class ErrorBoundary extends React.Component {

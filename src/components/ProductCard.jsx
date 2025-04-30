@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Star } from 'lucide-react';
-import Tooltip from '@/components/Tooltip';
+import Tooltip from './Tooltip';
 
 export default function ProductCard({ product, isRecommended = false }) {
   const { addToCart } = useCart();

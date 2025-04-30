@@ -1,46 +1,43 @@
+// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./src/components/**/*.{js,jsx}"
+    './index.html', // Include the root HTML file
+    './src/**/*.{js,jsx,ts,tsx}', // Include all files in the src directory
+    './src/components/**/*.{js,jsx,ts,tsx}', // Include all files in the components folder
+    './src/pages/**/*.{js,jsx,ts,tsx}', // Include all files in the pages folder
   ],
   theme: {
     extend: {
-      // Custom transitions
       transitionProperty: {
-        'scale': 'transform',
-        'shadow': 'box-shadow'
+        scale: 'transform', // Add scale transitions
+        shadow: 'box-shadow', // Add shadow transitions
       },
-      // Custom colors
       colors: {
         primary: {
-          500: '#3b82f6', // blue-500
-          600: '#2563eb'  // blue-600
+          500: '#3b82f6', // Primary blue
+          600: '#2563eb', // Darker primary blue
         },
         success: {
-          500: '#10b981'  // emerald-500
-        }
+          500: '#10b981', // Success green
+        },
       },
-      // Built-in line-clamp (no plugin needed)
       lineClamp: {
-        1: '1',
-        2: '2',
-        3: '3',
-        4: '4',
-        5: '5'
-      }
+        1: '1', // Clamp 1 line
+        2: '2', // Clamp 2 lines
+        3: '3', // Clamp 3 lines
+        4: '4', // Clamp 4 lines
+        5: '5', // Clamp 5 lines
+      },
     },
   },
   plugins: [
-    require('@tailwindcss/aspect-ratio')
-    // Add other plugins here (no line-clamp needed)
+    require('@tailwindcss/aspect-ratio'), // Enable aspect ratio utilities
+    // Uncomment the following plugins if needed:
+    // require('@tailwindcss/forms'), // Enable form styling
+    // require('@tailwindcss/typography'), // Enable typography utilities
   ],
-  // Optional: Future-proof configuration
   future: {
-    hoverOnlyWhenSupported: true,
+    hoverOnlyWhenSupported: true, // Optimize hover styles for supported browsers
   },
-  // Optional: Disable core plugins if needed
-  corePlugins: {
-    // float: false, // Example: disable float utilities
-  }
 };

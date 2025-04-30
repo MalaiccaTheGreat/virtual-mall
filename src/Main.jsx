@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
 }
 
 // Initialize GA4
-ReactGA.initialize('G-XXXXXXXXXX');
+ReactGA.initialize('G-XXXXXXXXXX'); // Replace with your actual GA4 tracking ID
 
 function GAListener() {
   const location = useLocation();
@@ -103,11 +103,11 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <AuthProvider>
-        <CartProvider>
+      <CartProvider> {/* CartProvider wraps the entire app */}
+        <AuthProvider>
           <RouterProvider router={router} />
-        </CartProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </CartProvider>
     </React.StrictMode>
   );
 }

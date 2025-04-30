@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Star } from 'lucide-react';
 import Tooltip from './Tooltip';
+import { useCart } from '../context/CartContext'; // Import useCart from CartContext
 
 export default function ProductCard({ product, isRecommended = false }) {
-  const { addToCart } = useCart();
+  const { addToCart } = useCart(); // Use the useCart hook
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0]);
   const [isAdding, setIsAdding] = useState(false);
@@ -14,7 +15,7 @@ export default function ProductCard({ product, isRecommended = false }) {
       ...product,
       selectedSize,
       selectedColor,
-      quantity: 1
+      quantity: 1,
     });
     setTimeout(() => setIsAdding(false), 1000);
   };

@@ -17,6 +17,8 @@
   "dependencies": {
     "@floating-ui/react": "^0.27.8",
     "@floating-ui/react-dom": "^2.1.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "axios": "^1.6.2",
     "build": "^0.1.4",
     "fabric": "^6.6.4",

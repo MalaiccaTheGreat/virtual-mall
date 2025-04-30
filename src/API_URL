@@ -1,4 +1,12 @@
 // src/config.js
+interface ImportMetaEnv {
+  readonly PROD: boolean;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 export const API_URL = import.meta.env.PROD
   ? 'https://your-production-api.com'
   : 'http://localhost:3000';

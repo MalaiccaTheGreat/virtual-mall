@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import FilterSidebar from '../components/FilterSideBar';
-import ProductGrid from './components/ProductGrid';
+import FilterSidebar from '../components/FilterSideBar'; // Fixed capitalization in the import
+import ProductGrid from '../@components/ProductGrid.jsx'; // Correct import path
 import { products } from '../data/products';
 
 export default function Home({ onAddToCart }) {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ShoppingCart, Star, Info, Loader2 } from 'lucide-react';
 import Tooltip from './Tooltip';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../Context/CartContext';
 import { useTryOn } from '../context/TryOnContext';
 import PropTypes from 'prop-types';
 

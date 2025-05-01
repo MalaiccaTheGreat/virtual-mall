@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export const TryOnContext = createContext();
 
@@ -18,4 +18,13 @@ export function TryOnProvider({ children }) {
       {children}
     </TryOnContext.Provider>
   );
+}
+
+// Custom hook to use the TryOnContext
+export function useTryOn() {
+  const context = useContext(TryOnContext);
+  if (context === undefined) {
+    throw new Error('useTryOn must be used within a TryOnProvider');
+  }
+  return context;
 }

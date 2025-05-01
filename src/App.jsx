@@ -19,6 +19,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import NotFound from './components/NotFound';
+import { TryOnProvider } from './Context/TryOnContext';
 
 function App() {
   // State management with custom hook for localStorage
@@ -167,3 +168,11 @@ function App() {
 }
 
 export default App;
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <TryOnProvider>
+      <App />
+    </TryOnProvider>
+  </React.StrictMode>
+);

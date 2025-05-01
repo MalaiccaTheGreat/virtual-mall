@@ -1,266 +1,169 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ShoppingCart, RefreshCw, Ruler, Shirt } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { ShoppingCart, RefreshCw, Ruler, Shirt, X, Star, ChevronDown } from 'lucide-react';
 import Header from './components/Header';
 import ProductGrid from './Products/ProductGrid';
 import ProductCard from './components/ProductCard';
 import Cart from './components/Cart';
+import TryOnViewer from './components/TryOnViewer';
 import { products } from './data/products';
+import useLocalStorage from './hooks/useLocalStorage';
+import RecommendationEngine from './services/RecommendationEngine';
+import { CartProvider } from './context/CartContext'; // Import CartProvider
+import { AuthProvider } from './context/AuthContext'; // Import AuthProvider if needed
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Profile from './pages/Profile';
+import NotFound from './components/NotFound';
 
-export default function App() {
-  // State management
-  const [cartItems, setCartItems] = useState([]);
+function App() {
+  // State management with custom hook for localStorage
+  const [cartItems, setCartItems] = useLocalStorage('cart', []);
   const [showCart, setShowCart] = useState(false);
+  const [showTryOn, setShowTryOn] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMeasurements, setShowMeasurements] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [priceRange, setPriceRange] = useState([0, 500]);
+  
+  // User preferences with validation
   const [userPreferences, setUserPreferences] = useState({
-    measurements: { height: 175, waist: 32 },
-    stylePreferences: "casual"
+    measurements: { height: 175, waist: 32, chest: 95, inseam: 32 },
+    stylePreferences: "casual",
+    budget: 200,
+    favoriteBrands: []
   });
 
-  // Load cart from localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) setCartItems(JSON.parse(savedCart));
-  }, []);
-
-  // Persist cart to localStorage
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
+  // Memoized cart total and count
+  const { totalItems, cartTotal } = useMemo(() => {
+    return {
+      totalItems: cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0),
+      cartTotal: cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
+    };
   }, [cartItems]);
 
-  // Enhanced cart functions
+  // Enhanced cart operations with useCallback
   const addToCart = useCallback((product, selectedSize = null, selectedColor = null) => {
-    const existingItem = cartItems.find(item => 
-      item.id === product.id && 
-      item.size === selectedSize && 
-      item.color === selectedColor
-    );
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => 
+        item.id === product.id && 
+        item.size === selectedSize && 
+        item.color === selectedColor
+      );
 
-    if (existingItem) {
-      setCartItems(cartItems.map(item =>
-        item.id === product.id && item.size === selectedSize && item.color === selectedColor
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCartItems([...cartItems, { 
+      const timestamp = new Date().toISOString();
+      
+      if (existingItem) {
+        return prevItems.map(item =>
+          item.id === product.id && item.size === selectedSize && item.color === selectedColor
+            ? { 
+                ...item, 
+                quantity: item.quantity + 1,
+                lastUpdated: timestamp
+              }
+            : item
+        );
+      }
+      return [...prevItems, { 
         ...product, 
         quantity: 1,
         size: selectedSize,
-        color: selectedColor
-      }]);
-    }
-  }, [cartItems]);
+        color: selectedColor,
+        addedAt: timestamp,
+        lastUpdated: timestamp
+      }];
+    });
+  }, [setCartItems]);
 
   const removeFromCart = useCallback((id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  }, [cartItems]);
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  }, [setCartItems]);
 
   const updateQuantity = useCallback((id, newQuantity) => {
-    setCartItems(cartItems.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
-    ));
-  }, [cartItems]);
+    setCartItems(prevItems => 
+      prevItems.map(item => 
+        item.id === id 
+          ? { 
+              ...item, 
+              quantity: Math.max(1, Math.min(99, newQuantity)),
+              lastUpdated: new Date().toISOString()
+            } 
+          : item
+      )
+    );
+  }, [setCartItems]);
 
-  // Recommendation system
+  // Try-on handler with analytics event
+  const handleTryOn = useCallback((product) => {
+    setCurrentProduct(product);
+    setShowTryOn(true);
+    // Analytics event could be logged here
+  }, []);
+
+  // Recommendation system with service class
   const fetchRecommendations = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Mock recommendation logic
-      const mockRecommendations = products
-        .filter(product => 
-          product.style === userPreferences.stylePreferences &&
-          product.category !== "accessories"
-        )
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 4);
-
-      setRecommendedProducts(mockRecommendations.map(rec => ({
-        ...rec,
-        isRecommended: true
-      })));
+      const recommendations = await RecommendationEngine.getRecommendations({
+        userPreferences,
+        cartHistory: cartItems,
+        priceRange
+      });
+      setRecommendedProducts(recommendations);
     } catch (error) {
-      console.error("Failed to load recommendations:", error);
+      console.error("Recommendation error:", error);
+      // Fallback to local recommendations
+      setRecommendedProducts(RecommendationEngine.getLocalRecommendations(userPreferences));
     } finally {
       setIsLoading(false);
     }
-  }, [userPreferences.stylePreferences]);
+  }, [userPreferences, cartItems, priceRange]);
 
-  // Load recommendations on mount and when preferences change
+  // Load recommendations on mount and when dependencies change
   useEffect(() => {
     fetchRecommendations();
   }, [fetchRecommendations]);
 
+  // Filter products by category and price range
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesCategory = activeCategory === 'all' || product.category === activeCategory;
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+      return matchesCategory && matchesPrice;
+    });
+  }, [activeCategory, priceRange]);
+
+  // Categories for filtering
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(products.map(p => p.category))];
+    return ['all', ...uniqueCategories];
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      {/* Header with controls */}
-      <Header>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowMeasurements(true)}
-            className="p-2 rounded-full hover:bg-gray-200"
-            title="Update measurements"
-          >
-            <Ruler className="w-5 h-5" />
-          </button>
-          
-          {isLoading ? (
-            <div className="flex items-center text-sm text-gray-500">
-              <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-              Loading...
-            </div>
-          ) : (
-            <button
-              onClick={fetchRecommendations}
-              className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-              disabled={isLoading}
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Refresh
-            </button>
-          )}
-          
-          <button 
-            onClick={() => setShowCart(true)}
-            className="relative p-2 rounded-full hover:bg-gray-200"
-            aria-label="Shopping cart"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0)}
-              </span>
-            )}
-          </button>
-        </div>
-      </Header>
-
-      {/* Measurements Modal */}
-      {showMeasurements && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Your Measurements</h2>
-              <button 
-                onClick={() => setShowMeasurements(false)}
-                className="text-gray-500 hover:text-black"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block mb-1">Height (cm)</label>
-                <input
-                  type="number"
-                  value={userPreferences.measurements.height}
-                  onChange={(e) => setUserPreferences({
-                    ...userPreferences,
-                    measurements: {
-                      ...userPreferences.measurements,
-                      height: Number(e.target.value)
-                    }
-                  })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              
-              <div>
-                <label className="block mb-1">Waist (cm)</label>
-                <input
-                  type="number"
-                  value={userPreferences.measurements.waist}
-                  onChange={(e) => setUserPreferences({
-                    ...userPreferences,
-                    measurements: {
-                      ...userPreferences.measurements,
-                      waist: Number(e.target.value)
-                    }
-                  })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              
-              <div>
-                <label className="block mb-1">Style Preference</label>
-                <select
-                  value={userPreferences.stylePreferences}
-                  onChange={(e) => setUserPreferences({
-                    ...userPreferences,
-                    stylePreferences: e.target.value
-                  })}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="casual">Casual</option>
-                  <option value="formal">Formal</option>
-                  <option value="sporty">Sporty</option>
-                </select>
-              </div>
-              
-              <button
-                onClick={() => {
-                  setShowMeasurements(false);
-                  fetchRecommendations();
-                }}
-                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-              >
-                Save Preferences
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main content */}
-      <main className="max-w-6xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-blue-600 mb-6 md:mb-8">
-          Virtual Clothing Mall
-        </h1>
-        
-        <ProductGrid>
-          {/* Recommended Products Section */}
-          {recommendedProducts.length > 0 && (
-            <>
-              <h2 className="col-span-full text-2xl font-semibold mt-8 mb-4 text-gray-800 flex items-center">
-                <Shirt className="mr-2 text-blue-500" />
-                Recommended For You
-              </h2>
-              {recommendedProducts.map(product => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product}
-                  onAddToCart={(size, color) => addToCart(product, size, color)}
-                  isRecommended={true}
-                />
-              ))}
-            </>
-          )}
-
-          {/* All Products Section */}
-          <h2 className="col-span-full text-2xl font-semibold mt-8 mb-4 text-gray-800">
-            All Products
-          </h2>
-          {products.map(product => (
-            <ProductCard 
-              key={product.id}
-              product={product}
-              onAddToCart={(size, color) => addToCart(product, size, color)}
-            />
-          ))}
-        </ProductGrid>
-      </main>
-
-      {/* Cart Overlay */}
-      {showCart && (
-        <Cart 
-          items={cartItems}
-          onClose={() => setShowCart(false)}
-          onRemove={removeFromCart}
-          onUpdateQuantity={updateQuantity}
-        />
-      )}
-    </div>
+    <CartProvider> {/* Wrap the app with CartProvider */}
+      <AuthProvider> {/* Optional: Wrap with AuthProvider if authentication is used */}
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </AuthProvider>
+    </CartProvider>
   );
 }
+
+export default App;

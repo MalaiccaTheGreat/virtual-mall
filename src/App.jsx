@@ -8,7 +8,7 @@ import TryOnViewer from './components/TryOnViewer';
 import { products } from './data/products';
 import useLocalStorage from './hooks/useLocalStorage';
 import RecommendationEngine from './services/RecommendationEngine';
-import { CartProvider } from './context/CartContext'; // Import CartProvider
+import { CartProvider } from './Context/CartContext'; // Import CartProvider
 import { AuthProvider } from './context/AuthContext'; // Import AuthProvider if needed
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -19,7 +19,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import NotFound from './components/NotFound';
-import { TryOnProvider } from './Context/TryOnContext';
+import { TryOnProvider } from './context/TryOnContext';
 
 function App() {
   // State management with custom hook for localStorage

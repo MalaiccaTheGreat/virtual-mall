@@ -45,7 +45,7 @@ const Header = React.memo(function Header({ children }) {
               className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
               aria-label="FashionHub homepage"
             >
-              FashionHub
+              Virtual Mall
             </a>
           </div>
 

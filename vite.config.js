@@ -36,6 +36,7 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash][extname]',
         entryFileNames: 'assets/[name]-[hash].js',
       },
+      external: ['react-toastify'], // Added external configuration
     },
   },
   server: {

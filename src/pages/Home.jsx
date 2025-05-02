@@ -40,7 +40,7 @@ export default function Home({ onAddToCart }) {
       <FilterSidebar filters={filters} setFilters={setFilters} />
       <div className="flex-1">
         <h1 className="text-3xl md:text-4xl font-bold text-blue-600 mb-6 md:mb-8">
-          Virtual Clothing Mall
+          Pulse & Threads - Fashion Hub
         </h1>
         <ProductGrid products={filteredProducts} />
       </div>

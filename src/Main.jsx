@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './output.css';
 import { CartProvider } from './Context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { TryOnProvider } from './context/TryOnContext';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
+import Welcome from './pages/Welcome'; // Add new Welcome page import
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import Login from './pages/Login';
@@ -73,10 +75,33 @@ const router = createBrowserRouter([
       </ErrorBoundary>
     ),
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <Welcome /> }, // Changed to Welcome as landing page
+      { path: 'home', element: <Home /> }, // Moved Home to separate route
       { path: 'product/:id', element: <ProductDetail /> },
-      { path: 'login', element: <Login /> },
-      { path: 'signup', element: <Signup /> },
+      { 
+        path: 'login', 
+        element: <Login />,
+        loader: () => {
+          // Redirect to home if already logged in
+          const user = JSON.parse(localStorage.getItem('user'));
+          if (user) {
+            return window.location.replace('/home');
+          }
+          return null;
+        }
+      },
+      { 
+        path: 'signup', 
+        element: <Signup />,
+        loader: () => {
+          // Redirect to home if already logged in
+          const user = JSON.parse(localStorage.getItem('user'));
+          if (user) {
+            return window.location.replace('/home');
+          }
+          return null;
+        }
+      },
       { path: 'try-on', element: <TryOnViewer /> },
       {
         path: 'checkout',
@@ -103,9 +128,11 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <CartProvider> {/* CartProvider wraps the entire app */}
+      <CartProvider>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <TryOnProvider>
+            <RouterProvider router={router} />
+          </TryOnProvider>
         </AuthProvider>
       </CartProvider>
     </React.StrictMode>

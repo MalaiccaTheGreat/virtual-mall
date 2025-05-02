@@ -4,8 +4,7 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "**/src/**"
+      "**/node_modules/**"
     ],
     "rewrites": [
       {
@@ -15,7 +14,7 @@
     ],
     "headers": [
       {
-        "source": "**/*.@(js|css|jpg|png|webp|svg|gif)",
+        "source": "**/*.@(js|css|jpg|png|svg|gif|webp|ico)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -24,7 +23,7 @@
         ]
       },
       {
-        "source": "/assets/images/**",
+        "source": "/assets/**",
         "headers": [
           {
             "key": "Cache-Control",
@@ -35,5 +34,30 @@
     ],
     "cleanUrls": true,
     "trailingSlash": false
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
+    "source": "functions"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }

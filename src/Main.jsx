@@ -20,52 +20,7 @@ import { useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
 
-// Custom Error Boundary with improved error handling
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Error caught by boundary:", error, errorInfo);
-    this.setState({ errorInfo });
-    ReactGA.exception({
-      description: `${error.toString()} - ${errorInfo.componentStack}`,
-      fatal: true
-    });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-6 bg-red-50 border-l-4 border-red-500 max-w-2xl mx-auto mt-10">
-          <h2 className="text-xl font-bold text-red-700 mb-2">Something went wrong</h2>
-          <p className="text-red-600 mb-4">{this.state.error.toString()}</p>
-          <details className="mb-4">
-            <summary className="cursor-pointer text-sm text-red-500">Error details</summary>
-            <pre className="mt-2 text-xs text-red-400 overflow-auto">
-              {this.state.errorInfo?.componentStack}
-            </pre>
-          </details>
-          <button
-            onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
-          >
-            Try Again
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-// Initialize GA4 with enhanced configuration
+// Initialize GA4 before any components
 ReactGA.initialize('G-XXXXXXXXXX', {
   gaOptions: {
     cookieDomain: 'auto',
@@ -73,34 +28,57 @@ ReactGA.initialize('G-XXXXXXXXXX', {
   }
 });
 
-// GAListener with route change tracking
+// Error Boundary Component (standalone)
+class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Application Error:", error, errorInfo);
+    ReactGA.event({
+      category: 'Error',
+      action: 'Component Error',
+      label: error.toString()
+    });
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false });
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-fallback">
+          <h2>Something went wrong</h2>
+          <button onClick={this.handleReset}>Try Again</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// GAListener Component (standalone)
 function GAListener() {
   const location = useLocation();
-  
+
   useEffect(() => {
     ReactGA.send({
       hitType: 'pageview',
-      page: location.pathname + location.search,
+      page: location.pathname,
       title: document.title
     });
-    
-    // Enhanced scroll tracking
-    const handleScroll = () => {
-      ReactGA.event({
-        category: 'Scroll',
-        action: 'Page scroll',
-        value: Math.round((window.scrollY / document.body.scrollHeight) * 100)
-      });
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, [location]);
 
   return null;
 }
 
-// Router configuration with future flags
+// Main Router Configuration
 const router = createBrowserRouter(
   [
     {
@@ -111,79 +89,66 @@ const router = createBrowserRouter(
           <Layout />
         </ErrorBoundary>
       ),
+      errorElement: <ErrorBoundary />,
       children: [
         { index: true, element: <Welcome /> },
         { path: 'home', element: <Home /> },
         { path: 'product/:id', element: <ProductDetail /> },
         { 
-          path: 'login', 
+          path: 'login',
           element: <Login />,
-          loader: () => {
+          loader: async () => {
             const user = JSON.parse(localStorage.getItem('user'));
-            if (user) return window.location.replace('/home');
-            return null;
+            return user ? { redirect: '/home' } : null;
           }
         },
         { 
-          path: 'signup', 
+          path: 'signup',
           element: <Signup />,
-          loader: () => {
+          loader: async () => {
             const user = JSON.parse(localStorage.getItem('user'));
-            if (user) return window.location.replace('/home');
-            return null;
+            return user ? { redirect: '/home' } : null;
           }
         },
         { path: 'try-on', element: <TryOnViewer /> },
         {
           path: 'checkout',
-          element: (
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          )
+          element: <ProtectedRoute><Checkout /></ProtectedRoute>,
         },
         {
           path: 'profile',
-          element: (
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          )
+          element: <ProtectedRoute><Profile /></ProtectedRoute>,
         },
         { path: '*', element: <NotFound /> }
       ]
     }
   ],
   {
-    // React Router future flags
     future: {
       v7_startTransition: true,
       v7_relativeSplatPath: true,
-      v7_fetcherPersist: true,
-      v7_partialHydration: true
+      v7_fetcherPersist: true
     }
   }
 );
 
-// Root component with all providers
+// Main App Component
 function App() {
   return (
-    <CartProvider>
-      <AuthProvider>
-        <TryOnProvider>
-          <RouterProvider router={router} />
-        </TryOnProvider>
-      </AuthProvider>
-    </CartProvider>
+    <React.StrictMode>
+      <CartProvider>
+        <AuthProvider>
+          <TryOnProvider>
+            <RouterProvider router={router} />
+          </TryOnProvider>
+        </AuthProvider>
+      </CartProvider>
+    </React.StrictMode>
   );
 }
 
-// Render with Strict Mode
+// Render
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  ReactDOM.createRoot(rootElement).render(<App />);
 }

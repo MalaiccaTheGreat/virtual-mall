@@ -1,18 +1,33 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import logo from '../assets/images/logo.png'; // Import logo
+import background from '../assets/images/welcome-bg.jpg'; // Import background
 
 export default function Welcome() {
-  // Animation effects could be added here
+  // Set the page title
   useEffect(() => {
     document.title = "Welcome to Virtual Mall";
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-4xl text-center mb-12">
-        <h1 className="text-5xl font-bold text-purple-800 mb-6 animate-fadeIn">
+    <div 
+      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center p-4"
+      style={{ backgroundImage: `url(${background})` }} // Dynamic background
+    >
+      {/* Header with logo */}
+      <div className="flex items-center justify-center pt-10">
+        <img 
+          src={logo} 
+          alt="Pulse & Threads Logo" 
+          className="h-20 mr-4" 
+        />
+        <h1 className="text-5xl font-bold text-white">
           Welcome to Pulse & Threads
         </h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl text-center mb-12">
         <p className="text-xl text-gray-600 mb-8">
           Experience shopping like never before with our immersive virtual try-on technology
         </p>
@@ -41,6 +56,7 @@ export default function Welcome() {
         </div>
       </div>
       
+      {/* How It Works Section */}
       <div className="mt-16 text-center">
         <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
         <div className="flex flex-wrap justify-center gap-8">
@@ -55,30 +71,6 @@ export default function Welcome() {
               <p className="text-gray-600">{item.desc}</p>
             </div>
           ))}
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="flex-grow flex items-center justify-center">
-        <div className="text-center text-white bg-black bg-opacity-50 p-8 rounded-xl">
-          <p className="text-xl mb-6">
-            Experience shopping like never before with our immersive virtual try-on technology
-          </p>
-          
-          <div className="space-y-4">
-            <Link 
-              to="/login" 
-              className="block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
-            >
-              Get Started
-            </Link>
-            <Link 
-              to="/signup" 
-              className="block border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-black transition"
-            >
-              Create Account
-            </Link>
-          </div>
         </div>
       </div>
     </div>

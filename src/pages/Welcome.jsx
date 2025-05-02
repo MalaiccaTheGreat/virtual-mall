@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
-import logo from '../assets/images/logo.png'; // Import logo
-import background from '../assets/images/welcome-bg.jpg'; // Import background
+import logo from '../assets/images/Logo.jpg'; // Import logo
+import background from '../assets/images/Background.jpg'; // Import background
 
 export default function Welcome() {
   // Set the page title

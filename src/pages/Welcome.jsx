@@ -28,7 +28,7 @@ export default function Welcome() {
 
       {/* Main Content */}
       <div className="max-w-4xl text-center mb-12">
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-gold-500 mb-8">
           Experience shopping like never before with our immersive virtual try-on technology
         </p>
         

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './Context/CartContext';
-import { AuthProvider } from './Context/AuthContext';
-import { TryOnProvider } from './Context/TryOnContext';
+import { AuthProvider } from './context/AuthContext';
+import { TryOnProvider } from './context/TryOnContext';
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
 import Layout from './components/Layout';

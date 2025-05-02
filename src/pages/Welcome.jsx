@@ -57,6 +57,30 @@ export default function Welcome() {
           ))}
         </div>
       </div>
+      
+      {/* Content */}
+      <div className="flex-grow flex items-center justify-center">
+        <div className="text-center text-white bg-black bg-opacity-50 p-8 rounded-xl">
+          <p className="text-xl mb-6">
+            Experience shopping like never before with our immersive virtual try-on technology
+          </p>
+          
+          <div className="space-y-4">
+            <Link 
+              to="/login" 
+              className="block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
+            >
+              Get Started
+            </Link>
+            <Link 
+              to="/signup" 
+              className="block border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-black transition"
+            >
+              Create Account
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { ShoppingCart, Star, Info, Loader2 } from 'lucide-react';
+import { ShoppingCart, Star, Info, Loader2, Shirt, ChevronDown } from 'lucide-react';
 import Tooltip from './Tooltip';
 import { useCart } from '../Context/CartContext';
-import { useTryOn } from '../context/TryOnContext';
+import { useTryOn } from '../Context/TryOnContext';
 import PropTypes from 'prop-types';
 
 const ProductCard = React.memo(function ProductCard({ 
@@ -11,7 +11,7 @@ const ProductCard = React.memo(function ProductCard({
   recommendationReason = '' 
 }) {
   const { addToCart } = useCart();
-  const { setTryOnProduct } = useTryOn();
+  const { openTryOn } = useTryOn(); // Changed from setTryOnProduct to openTryOn
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0]);
   const [isAdding, setIsAdding] = useState(false);
@@ -30,12 +30,12 @@ const ProductCard = React.memo(function ProductCard({
   }, [product, selectedSize, selectedColor, addToCart]);
 
   const handleTryOn = useCallback(() => {
-    setTryOnProduct({
+    openTryOn({ // Using openTryOn instead of setTryOnProduct
       ...product,
       selectedSize,
       selectedColor
     });
-  }, [product, selectedSize, selectedColor, setTryOnProduct]);
+  }, [product, selectedSize, selectedColor, openTryOn]);
 
   return (
     <article 

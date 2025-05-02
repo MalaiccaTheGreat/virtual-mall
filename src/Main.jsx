@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './output.css';
-import { CartProvider } from './context/CartContext';
+import { CartProvider } from './Context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';

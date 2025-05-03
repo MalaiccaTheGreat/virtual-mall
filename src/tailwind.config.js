@@ -1,19 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './index.html', // Include the root HTML file
-    './src/**/*.{js,jsx,ts,tsx}', // Include all files in the src directory
+    './index.html',
+    './src/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
     extend: {
       colors: {
-        primary: '#3b82f6', // Example custom color
-        secondary: '#f43f5e', // Example custom color
+        primary: '#3b82f6',
+        secondary: '#f43f5e',
+        gold: {
+          500: '#FFD700',
+        },
       },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // Optional: Add Tailwind CSS forms plugin
-    require('@tailwindcss/typography'), // Optional: Add Tailwind CSS typography plugin
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
   ],
 };

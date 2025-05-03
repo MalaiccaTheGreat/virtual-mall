@@ -1,3 +1,72 @@
-@tailwind base; 
-@tailwind components; 
-@tailwind utilities; 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@400..700&family=Fira+Code:wght@400..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply font-sans text-primary-950 bg-white antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+/* Custom components */
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-gold-500 hover:bg-gold-600 text-primary-950 font-bold rounded-lg shadow-button transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 border-2 border-gold-500 text-gold-500 hover:bg-gold-500 hover:text-primary-950 font-bold rounded-lg transition-all duration-300;
+  }
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl hover:bg-white/20 transition-all;
+  }
+}
+
+/* Custom utilities and animations */
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .gold-glow {
+    @apply shadow-glow hover:shadow-glow-lg transition-shadow duration-300;
+  }
+}
+
+/* Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom scrollbar (optional) */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+::-webkit-scrollbar-track {
+  @apply bg-primary-50;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-600;
+}

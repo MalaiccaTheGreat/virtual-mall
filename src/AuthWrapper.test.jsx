@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import AuthWrapper from './AuthWrapper';
 
 const ProtectedPage = () => <div>Protected Content</div>;
+const AdminPage = () => <div>Admin Dashboard</div>;
 
 describe('AuthWrapper', () => {
   test('redirects unauthenticated users', () => {
@@ -56,7 +57,7 @@ describe('AuthWrapper', () => {
           value={{
             isAuthenticated: true,
             loading: false,
-            currentUser: { roles: ['user'] },
+            currentUser: { roles: ['customer'] },
           }}
         >
           <AuthWrapper requiredRoles={['admin']}>
@@ -67,5 +68,25 @@ describe('AuthWrapper', () => {
     );
 
     expect(screen.getByText(/you do not have the required permissions/i)).toBeInTheDocument();
+  });
+
+  test('allows access with correct roles', () => {
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider
+          value={{
+            isAuthenticated: true,
+            loading: false,
+            currentUser: { roles: ['admin'] },
+          }}
+        >
+          <AuthWrapper requiredRoles={['admin']}>
+            <AdminPage />
+          </AuthWrapper>
+        </AuthContext.Provider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
   });
 });

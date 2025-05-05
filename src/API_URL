@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // src/config.js
 interface ImportMetaEnv {
   readonly PROD: boolean;
